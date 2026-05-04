@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catan Tracker</title>
+  <style>
+    /* ── Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #1a1008;
+      --surface: #2a1c0e;
+      --surface2: #3a2a16;
+      --border: #6b4c2a;
+      --gold: #d4a017;
+      --gold-light: #f0c040;
+      --text: #f5e8c8;
+      --text-muted: #a08060;
+      --red: #c0392b;
+      --green: #27ae60;
+      --radius: 10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 0 0 60px;
+    }
+
+    h1, h2, h3 { font-weight: 700; }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #3d1f00, #6b3a00);
+      border-bottom: 3px solid var(--gold);
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    header .logo { font-size: 2rem; }
+    header h1 { font-size: 1.6rem; color: var(--gold-light); letter-spacing: 1px; }
+    header .subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Layout ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      color: var(--gold);
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Buttons ── */
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      transition: opacity .15s, transform .1s;
+    }
+    button:hover { opacity: .88; }
+    button:active { transform: scale(.97); }
+
+    .btn-primary {
+      background: var(--gold);
+      color: #1a0d00;
+    }
+    .btn-danger {
+      background: var(--red);
+      color: #fff;
+    }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    /* ── Phase tabs ── */
+    .phase-indicator {
+      display: flex;
+      gap: 0;
+      margin-bottom: 24px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .phase-step {
+      flex: 1;
+      text-align: center;
+      padding: 10px 6px;
+      font-size: 0.8rem;
+      background: var(--surface2);
+      color: var(--text-muted);
+      transition: background .2s;
+    }
+    .phase-step.active {
+      background: var(--gold);
+      color: #1a0d00;
+      font-weight: 700;
+    }
+    .phase-step.done {
+      background: #3a2800;
+      color: var(--gold);
+    }
+
+    /* ── Color picker ── */
+    .color-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .color-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 20px;
+      border: 2px solid transparent;
+      background: var(--surface2);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      user-select: none;
+      transition: border-color .15s, transform .1s;
+    }
+    .color-chip:active { transform: scale(.95); }
+    .color-chip.selected { border-color: var(--gold-light); }
+    .color-chip .dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.3);
+    }
+
+    /* ── Player name input row ── */
+    .players-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .player-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .player-row .dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,.3);
+    }
+    .player-row input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 7px 12px;
+      font-size: 0.95rem;
+    }
+    .player-row input:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+    .player-row .remove-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      padding: 4px 8px;
+      line-height: 1;
+    }
+    .player-row .remove-btn:hover { color: var(--red); }
+
+    /* ── Dice tracker ── */
+    .dice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 12px;
+    }
+
+    .dice-cell {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 8px;
+      text-align: center;
+      transition: border-color .15s;
+    }
+    .dice-cell:hover { border-color: var(--gold); }
+
+    .dice-cell .dice-num {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--gold-light);
+      line-height: 1;
+    }
+    .dice-cell.red-num .dice-num { color: #e74c3c; }
+
+    .dice-cell .prob-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin: 3px 0 8px;
+    }
+    .dice-cell .count-display {
+      font-size: 1.6rem;
+      font-weight: 700;
+      min-height: 2rem;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .dice-cell .stepper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .dice-cell .stepper button {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      padding: 0;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .stepper .plus-btn { background: var(--gold); color: #1a0d00; }
+    .stepper .minus-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .stepper .minus-btn:hover { border-color: var(--red); color: var(--red); }
+
+    /* ── Quick roll row ── */
+    .quick-roll-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .quick-roll-bar button {
+      min-width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      padding: 0;
+      font-size: 0.9rem;
+      font-weight: 700;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .quick-roll-bar button:hover {
+      background: var(--gold);
+      color: #1a0d00;
+      border-color: var(--gold);
+    }
+    .quick-roll-bar .red-num { color: #e74c3c; }
+
+    /* ── Stats bar ── */
+    .stats-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .stat-chip {
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+    }
+    .stat-chip span { color: var(--gold); font-weight: 700; }
+
+    /* ── Histogram ── */
+    #results-section { display: none; }
+
+    .histogram {
+      padding: 8px 0;
+    }
+    .hist-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .hist-label {
+      width: 24px;
+      text-align: right;
+      font-weight: 700;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+    .hist-label.red-num { color: #e74c3c; }
+
+    .hist-bars {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .bar-track {
+      background: var(--surface2);
+      border-radius: 4px;
+      height: 18px;
+      position: relative;
+      overflow: visible;
+    }
+
+    .bar-actual {
+      background: var(--gold);
+      height: 100%;
+      border-radius: 4px;
+      transition: width .6s ease;
+      position: absolute;
+      top: 0; left: 0;
+    }
+    .bar-expected {
+      background: transparent;
+      border-right: 3px solid #4ecdc4;
+      height: calc(100% + 4px);
+      position: absolute;
+      top: -2px;
+      border-radius: 0;
+    }
+    .bar-label-actual { font-size: 0.72rem; color: var(--text-muted); }
+    .bar-label-expected { font-size: 0.72rem; color: #4ecdc4; }
+
+    .hist-counts {
+      min-width: 90px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .hist-counts .actual-val { color: var(--text); font-weight: 700; }
+
+    .legend {
+      display: flex;
+      gap: 16px;
+      font-size: 0.8rem;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-box {
+      width: 16px;
+      height: 12px;
+      border-radius: 3px;
+      background: var(--gold);
+    }
+    .legend-line {
+      width: 16px;
+      border-top: 3px solid #4ecdc4;
+    }
+
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .analysis-card {
+      background: var(--surface2);
+      border-radius: var(--radius);
+      padding: 14px;
+      border: 1px solid var(--border);
+    }
+    .analysis-card .label { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px; }
+    .analysis-card .value { font-size: 1.2rem; font-weight: 700; color: var(--gold-light); }
+    .analysis-card .sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Action buttons ── */
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* ── Section visibility ── */
+    .section { display: none; }
+    .section.visible { display: block; }
+
+    /* ── Responsive ── */
+    @media (max-width: 500px) {
+      .dice-grid { grid-template-columns: repeat(3, 1fr); }
+      header h1 { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🎲</div>
+  <div>
+    <h1>Catan Tracker</h1>
+    <div class="subtitle">Registra tus tiradas y analiza la estadística</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Phase indicator -->
+  <div class="phase-indicator" id="phaseBar">
+    <div class="phase-step active" id="phase1">1. Jugadores</div>
+    <div class="phase-step" id="phase2">2. Partida</div>
+    <div class="phase-step" id="phase3">3. Resultados</div>
+  </div>
+
+  <!-- ══ SECTION 1: Player setup ══ -->
+  <div class="section visible" id="setupSection">
+    <div class="card">
+      <h2>🎨 Elige los colores que se juegan</h2>
+      <div class="color-grid" id="colorGrid"></div>
+    </div>
+
+    <div class="card" id="playerNamesCard" style="display:none">
+      <h2>✏️ Nombre de los jugadores</h2>
+      <div class="players-list" id="playersList"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" onclick="startGame()">Comenzar partida →</button>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 2: Game ══ -->
+  <div class="section" id="gameSection">
+    <div class="card">
+      <h2>⚡ Registrar tirada rápida</h2>
+      <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px">
+        Toca el número que salió para sumarlo directamente.
+      </p>
+      <div class="quick-roll-bar" id="quickRollBar"></div>
+    </div>
+
+    <div class="card">
+      <h2>📊 Conteo de tiradas</h2>
+      <div class="stats-row" id="statsRow">
+        <div class="stat-chip">Total tiradas: <span id="totalRolls">0</span></div>
+        <div class="stat-chip">Tirada más frecuente: <span id="mostFreq">—</span></div>
+        <div class="stat-chip">Ronda estimada: <span id="roundEst">—</span></div>
+      </div>
+      <br>
+      <div class="dice-grid" id="diceGrid"></div>
+    </div>
+
+    <div class="card" id="playersCard" style="display:none">
+      <h2>👥 Jugadores</h2>
+      <div id="playersPill" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" onclick="finishGame()">Finalizar partida 🏆</button>
+      <button class="btn-ghost" onclick="resetAll()">Nueva partida</button>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 3: Results ══ -->
+  <div class="section" id="resultsSection">
+    <div class="card">
+      <h2>🏆 Resultados de la partida</h2>
+      <div id="resultPlayersPill" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"></div>
+      <div class="stats-row" id="resultsStatsRow"></div>
+    </div>
+
+    <div class="card">
+      <h2>📈 Histograma de tiradas</h2>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-box"></div> Tiradas reales</div>
+        <div class="legend-item"><div class="legend-line"></div> Esperado estadístico</div>
+      </div>
+      <div class="histogram" id="histogram"></div>
+    </div>
+
+    <div class="card">
+      <h2>🔍 Análisis</h2>
+      <div class="analysis-grid" id="analysisGrid"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" onclick="resetAll()">Nueva partida 🎲</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────────
+
+const CATAN_COLORS = [
+  { id: 'red',    label: 'Rojo',     hex: '#e74c3c' },
+  { id: 'blue',   label: 'Azul',     hex: '#2980b9' },
+  { id: 'white',  label: 'Blanco',   hex: '#ecf0f1' },
+  { id: 'orange', label: 'Naranja',  hex: '#e67e22' },
+  { id: 'green',  label: 'Verde',    hex: '#27ae60' },
+  { id: 'brown',  label: 'Marrón',   hex: '#8B5E3C' },
+];
+
+// Probability of each sum with 2d6
+const PROB = { 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:5, 9:4, 10:3, 11:2, 12:1 };
+const TOTAL_COMBOS = 36;
+const DICE_NUMS = [2,3,4,5,6,7,8,9,10,11,12];
+const RED_NUMS = new Set([2, 12]);   // visual: typically 7 is red on board but here we mark extremes
+
+// State
+let selectedColors = [];
+let playerNames = {};
+let rolls = {};
+DICE_NUMS.forEach(n => rolls[n] = 0);
+
+// ── Setup phase ───────────────────────────────────────────────────────────────
+
+function buildColorGrid() {
+  const grid = document.getElementById('colorGrid');
+  grid.innerHTML = '';
+  CATAN_COLORS.forEach(c => {
+    const chip = document.createElement('div');
+    chip.className = 'color-chip';
+    chip.dataset.id = c.id;
+    chip.innerHTML = `<div class="dot" style="background:${c.hex}"></div>${c.label}`;
+    chip.onclick = () => toggleColor(c.id, chip);
+    grid.appendChild(chip);
+  });
+}
+
+function toggleColor(id, chip) {
+  if (selectedColors.includes(id)) {
+    selectedColors = selectedColors.filter(c => c !== id);
+    chip.classList.remove('selected');
+  } else {
+    selectedColors.push(id);
+    chip.classList.add('selected');
+  }
+  renderPlayerNameInputs();
+}
+
+function renderPlayerNameInputs() {
+  const card = document.getElementById('playerNamesCard');
+  const list = document.getElementById('playersList');
+  if (selectedColors.length === 0) {
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = 'block';
+  list.innerHTML = '';
+  selectedColors.forEach(id => {
+    const color = CATAN_COLORS.find(c => c.id === id);
+    const row = document.createElement('div');
+    row.className = 'player-row';
+    row.innerHTML = `
+      <div class="dot" style="background:${color.hex}"></div>
+      <input
+        type="text"
+        placeholder="Jugador ${color.label}"
+        value="${playerNames[id] || ''}"
+        data-color="${id}"
+        oninput="playerNames[this.dataset.color] = this.value"
+      />
+    `;
+    list.appendChild(row);
+  });
+}
+
+// ── Game phase ────────────────────────────────────────────────────────────────
+
+function startGame() {
+  if (selectedColors.length === 0) {
+    alert('Selecciona al menos un color para comenzar.');
+    return;
+  }
+  // Ensure names are captured
+  document.querySelectorAll('#playersList input').forEach(inp => {
+    playerNames[inp.dataset.color] = inp.value;
+  });
+
+  setPhase(2);
+  buildQuickRollBar();
+  buildDiceGrid();
+  renderPlayersInGame();
+  updateStats();
+}
+
+function buildQuickRollBar() {
+  const bar = document.getElementById('quickRollBar');
+  bar.innerHTML = '';
+  DICE_NUMS.forEach(n => {
+    const btn = document.createElement('button');
+    btn.textContent = n;
+    if (n === 7) btn.classList.add('red-num');
+    btn.onclick = () => { rolls[n]++; updateDiceCell(n); updateStats(); };
+    btn.id = `qbtn-${n}`;
+    bar.appendChild(btn);
+  });
+}
+
+function buildDiceGrid() {
+  const grid = document.getElementById('diceGrid');
+  grid.innerHTML = '';
+  DICE_NUMS.forEach(n => {
+    const prob = (PROB[n] / TOTAL_COMBOS * 100).toFixed(1);
+    const cell = document.createElement('div');
+    cell.className = 'dice-cell' + (n === 7 ? ' red-num' : '');
+    cell.id = `cell-${n}`;
+    cell.innerHTML = `
+      <div class="dice-num">${n}</div>
+      <div class="prob-label">${prob}% esperado</div>
+      <div class="count-display" id="count-${n}">0</div>
+      <div class="stepper">
+        <button class="minus-btn" onclick="changeRoll(${n}, -1)">−</button>
+        <button class="plus-btn"  onclick="changeRoll(${n},  1)">+</button>
+      </div>
+    `;
+    grid.appendChild(cell);
+  });
+}
+
+function changeRoll(n, delta) {
+  rolls[n] = Math.max(0, rolls[n] + delta);
+  updateDiceCell(n);
+  updateStats();
+}
+
+function updateDiceCell(n) {
+  const el = document.getElementById(`count-${n}`);
+  if (el) el.textContent = rolls[n];
+}
+
+function renderPlayersInGame() {
+  const pill = document.getElementById('playersPill');
+  const card = document.getElementById('playersCard');
+  if (selectedColors.length === 0) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  pill.innerHTML = '';
+  selectedColors.forEach(id => {
+    const color = CATAN_COLORS.find(c => c.id === id);
+    const name = playerNames[id] || color.label;
+    const el = document.createElement('div');
+    el.style.cssText = `display:flex;align-items:center;gap:6px;background:var(--surface2);padding:6px 12px;border-radius:20px;border:1px solid var(--border)`;
+    el.innerHTML = `<div style="width:14px;height:14px;border-radius:50%;background:${color.hex};border:2px solid rgba(255,255,255,.3)"></div><span style="font-size:.9rem">${name}</span>`;
+    pill.appendChild(el);
+  });
+}
+
+function updateStats() {
+  const total = DICE_NUMS.reduce((s, n) => s + rolls[n], 0);
+  document.getElementById('totalRolls').textContent = total;
+
+  let maxCount = 0, maxNum = '—';
+  DICE_NUMS.forEach(n => { if (rolls[n] > maxCount) { maxCount = rolls[n]; maxNum = n; } });
+  document.getElementById('mostFreq').textContent = maxCount > 0 ? `${maxNum} (×${maxCount})` : '—';
+
+  const players = selectedColors.length || 1;
+  const round = total > 0 ? Math.ceil(total / players) : '—';
+  document.getElementById('roundEst').textContent = round;
+}
+
+// ── Results phase ─────────────────────────────────────────────────────────────
+
+function finishGame() {
+  const total = DICE_NUMS.reduce((s, n) => s + rolls[n], 0);
+  if (total === 0) {
+    alert('No hay tiradas registradas. Registra al menos una tirada antes de finalizar.');
+    return;
+  }
+  setPhase(3);
+  buildResults();
+}
+
+function buildResults() {
+  const total = DICE_NUMS.reduce((s, n) => s + rolls[n], 0);
+
+  // Players pills
+  const rp = document.getElementById('resultPlayersPill');
+  rp.innerHTML = '';
+  selectedColors.forEach(id => {
+    const color = CATAN_COLORS.find(c => c.id === id);
+    const name = playerNames[id] || color.label;
+    const el = document.createElement('div');
+    el.style.cssText = `display:flex;align-items:center;gap:6px;background:var(--surface2);padding:6px 12px;border-radius:20px;border:1px solid var(--border)`;
+    el.innerHTML = `<div style="width:14px;height:14px;border-radius:50%;background:${color.hex};border:2px solid rgba(255,255,255,.3)"></div><span style="font-size:.9rem">${name}</span>`;
+    rp.appendChild(el);
+  });
+
+  // Top stats
+  const statsRow = document.getElementById('resultsStatsRow');
+  let maxCount = 0, maxNum = '—', minCount = Infinity, minNum = '—';
+  DICE_NUMS.forEach(n => {
+    if (rolls[n] > maxCount) { maxCount = rolls[n]; maxNum = n; }
+    if (rolls[n] < minCount) { minCount = rolls[n]; minNum = n; }
+  });
+  statsRow.innerHTML = `
+    <div class="stat-chip">Total tiradas: <span>${total}</span></div>
+    <div class="stat-chip">Número más frecuente: <span>${maxNum} (×${maxCount})</span></div>
+    <div class="stat-chip">Número menos frecuente: <span>${minNum} (×${minCount})</span></div>
+  `;
+
+  // Histogram
+  const maxBar = Math.max(...DICE_NUMS.map(n => rolls[n]), 1);
+  const maxExpected = Math.max(...DICE_NUMS.map(n => (PROB[n] / TOTAL_COMBOS) * total));
+
+  const hist = document.getElementById('histogram');
+  hist.innerHTML = '';
+
+  DICE_NUMS.forEach(n => {
+    const actual = rolls[n];
+    const expected = (PROB[n] / TOTAL_COMBOS) * total;
+    const actualPct = (actual / maxBar * 100).toFixed(1);
+    const expectedPct = (expected / maxBar * 100).toFixed(1);
+    const actualRealPct = total > 0 ? (actual / total * 100).toFixed(1) : 0;
+    const expectedRealPct = (PROB[n] / TOTAL_COMBOS * 100).toFixed(1);
+
+    const row = document.createElement('div');
+    row.className = 'hist-row';
+    row.innerHTML = `
+      <div class="hist-label${n === 7 ? ' red-num' : ''}">${n}</div>
+      <div class="hist-bars">
+        <div class="bar-track" style="height:22px">
+          <div class="bar-actual" style="width:${actualPct}%"></div>
+          <div class="bar-expected" style="width:${expectedPct}%"></div>
+        </div>
+      </div>
+      <div class="hist-counts">
+        <span class="actual-val">${actual}</span>
+        <span style="color:var(--text-muted)"> / esp. ${expected.toFixed(1)}</span>
+        <br>
+        <span style="font-size:.72rem;color:var(--text-muted)">${actualRealPct}% real · ${expectedRealPct}% teórico</span>
+      </div>
+    `;
+    hist.appendChild(row);
+  });
+
+  // Analysis cards
+  buildAnalysis(total);
+}
+
+function buildAnalysis(total) {
+  const grid = document.getElementById('analysisGrid');
+  grid.innerHTML = '';
+
+  // 7s analysis
+  const sevens = rolls[7];
+  const expectedSevens = (6 / 36) * total;
+  const sevenDiff = sevens - expectedSevens;
+  addAnalysisCard(grid,
+    'Seises (7)',
+    `${sevens} tiradas`,
+    sevenDiff >= 0
+      ? `+${sevenDiff.toFixed(1)} por encima del esperado (${expectedSevens.toFixed(1)})`
+      : `${sevenDiff.toFixed(1)} por debajo del esperado (${expectedSevens.toFixed(1)})`
+  );
+
+  // Best number vs expected
+  let biggestOver = { n: 0, diff: -Infinity };
+  let biggestUnder = { n: 0, diff: Infinity };
+  DICE_NUMS.forEach(n => {
+    const expected = (PROB[n] / TOTAL_COMBOS) * total;
+    const diff = rolls[n] - expected;
+    if (diff > biggestOver.diff) biggestOver = { n, diff };
+    if (diff < biggestUnder.diff) biggestUnder = { n, diff };
+  });
+  addAnalysisCard(grid, 'Número con más suerte', `${biggestOver.n}`, `+${biggestOver.diff.toFixed(1)} sobre lo esperado`);
+  addAnalysisCard(grid, 'Número con menos suerte', `${biggestUnder.n}`, `${biggestUnder.diff.toFixed(1)} debajo de lo esperado`);
+
+  // Chi-square-like fairness score
+  let chiSum = 0;
+  DICE_NUMS.forEach(n => {
+    const expected = (PROB[n] / TOTAL_COMBOS) * total;
+    if (expected > 0) chiSum += Math.pow(rolls[n] - expected, 2) / expected;
+  });
+  const fairness = Math.max(0, 100 - chiSum * 2).toFixed(0);
+  addAnalysisCard(grid, 'Puntuación de aleatoriedad', `${fairness} / 100`, fairness >= 70 ? 'Distribución bastante normal' : fairness >= 40 ? 'Distribución algo sesgada' : 'Distribución muy sesgada');
+
+  // Most rolled excluding 7
+  let topNon7 = DICE_NUMS.filter(n => n !== 7).reduce((a, b) => rolls[a] >= rolls[b] ? a : b);
+  addAnalysisCard(grid, 'Número de recurso más salido', `${topNon7}`, `×${rolls[topNon7]} veces (esperado ${((PROB[topNon7]/36)*total).toFixed(1)})`);
+}
+
+function addAnalysisCard(grid, label, value, sub) {
+  const card = document.createElement('div');
+  card.className = 'analysis-card';
+  card.innerHTML = `<div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div>`;
+  grid.appendChild(card);
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+
+function setPhase(n) {
+  ['setupSection', 'gameSection', 'resultsSection'].forEach((id, i) => {
+    document.getElementById(id).classList.toggle('visible', i + 1 === n);
+  });
+  ['phase1','phase2','phase3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.classList.remove('active', 'done');
+    if (i + 1 === n) el.classList.add('active');
+    else if (i + 1 < n) el.classList.add('done');
+  });
+}
+
+function resetAll() {
+  if (!confirm('¿Reiniciar la partida? Se perderán todos los datos.')) return;
+  selectedColors = [];
+  playerNames = {};
+  DICE_NUMS.forEach(n => rolls[n] = 0);
+  buildColorGrid();
+  renderPlayerNameInputs();
+  setPhase(1);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+buildColorGrid();
+</script>
+</body>
+</html>

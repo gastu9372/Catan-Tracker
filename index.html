@@ -4,121 +4,186 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Catan Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* ── Base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #1a1008;
-      --surface: #2a1c0e;
-      --surface2: #3a2a16;
-      --border: #6b4c2a;
-      --gold: #d4a017;
-      --gold-light: #f0c040;
-      --text: #f5e8c8;
-      --text-muted: #a08060;
+      --bg: #0f0a04;
+      --surface: #1c140a;
+      --surface2: #261b0e;
+      --surface3: #312213;
+      --border: #4a3418;
+      --border-light: #6b4c2a;
+      --gold: #d4920f;
+      --gold-light: #f5b942;
+      --gold-dim: #8a5e0a;
+      --text: #f0e0c0;
+      --text-muted: #8a6a48;
+      --text-dim: #5a4030;
       --red: #c0392b;
-      --green: #27ae60;
-      --radius: 10px;
+      --accent: #4ecdc4;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 24px rgba(0,0,0,.5);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.4);
     }
 
     body {
       background: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 20% 0%, rgba(100,60,10,.18) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 100%, rgba(80,40,5,.15) 0%, transparent 60%);
       color: var(--text);
-      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
       min-height: 100vh;
-      padding: 0 0 60px;
+      padding: 0 0 80px;
     }
 
     h1, h2, h3 { font-weight: 700; }
 
     /* ── Header ── */
     header {
-      background: linear-gradient(135deg, #3d1f00, #6b3a00);
-      border-bottom: 3px solid var(--gold);
-      padding: 18px 24px;
+      background: linear-gradient(135deg, #1e0e00 0%, #3d2000 50%, #1e0e00 100%);
+      border-bottom: 2px solid var(--gold-dim);
+      padding: 20px 28px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 30px rgba(0,0,0,.7);
     }
 
-    header .logo { font-size: 2rem; }
-    header h1 { font-size: 1.6rem; color: var(--gold-light); letter-spacing: 1px; }
-    header .subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
+    header .logo {
+      font-size: 2.2rem;
+      filter: drop-shadow(0 0 8px rgba(212,146,15,.5));
+    }
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: .5px;
+    }
+    header .subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      letter-spacing: .3px;
+    }
 
     /* ── Layout ── */
-    .container { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+    .container { max-width: 900px; margin: 0 auto; padding: 28px 16px; }
 
     /* ── Cards ── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 20px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-sm);
+      transition: border-color .2s;
     }
+    .card:hover { border-color: var(--border-light); }
+
     .card h2 {
-      color: var(--gold);
-      font-size: 1.1rem;
-      margin-bottom: 16px;
+      color: var(--gold-light);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 18px;
       display: flex;
       align-items: center;
       gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+    .card h2 .icon {
+      width: 28px;
+      height: 28px;
+      background: var(--surface3);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
     }
 
     /* ── Buttons ── */
     button {
       cursor: pointer;
       border: none;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      padding: 8px 16px;
-      transition: opacity .15s, transform .1s;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 10px 20px;
+      transition: all .15s;
+      letter-spacing: .3px;
     }
-    button:hover { opacity: .88; }
-    button:active { transform: scale(.97); }
+    button:active { transform: scale(.96); }
 
     .btn-primary {
-      background: var(--gold);
-      color: #1a0d00;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: #120800;
+      box-shadow: 0 2px 12px rgba(212,146,15,.35);
     }
-    .btn-danger {
-      background: var(--red);
-      color: #fff;
+    .btn-primary:hover {
+      box-shadow: 0 4px 20px rgba(212,146,15,.5);
+      transform: translateY(-1px);
     }
     .btn-ghost {
       background: transparent;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-light);
+      color: var(--text-muted);
+    }
+    .btn-ghost:hover {
+      border-color: var(--gold-dim);
       color: var(--text);
     }
 
     /* ── Phase tabs ── */
     .phase-indicator {
       display: flex;
-      gap: 0;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
       border-radius: var(--radius);
       overflow: hidden;
       border: 1px solid var(--border);
+      background: var(--surface);
     }
     .phase-step {
       flex: 1;
       text-align: center;
-      padding: 10px 6px;
-      font-size: 0.8rem;
-      background: var(--surface2);
-      color: var(--text-muted);
-      transition: background .2s;
+      padding: 12px 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: transparent;
+      color: var(--text-dim);
+      transition: all .25s;
+      letter-spacing: .3px;
+      position: relative;
+    }
+    .phase-step + .phase-step::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 25%; height: 50%;
+      width: 1px;
+      background: var(--border);
     }
     .phase-step.active {
-      background: var(--gold);
-      color: #1a0d00;
-      font-weight: 700;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: #120800;
+      font-weight: 800;
     }
+    .phase-step.active + .phase-step::before { display: none; }
     .phase-step.done {
-      background: #3a2800;
-      color: var(--gold);
+      color: var(--gold-dim);
+      background: rgba(212,146,15,.07);
     }
 
     /* ── Color picker ── */
@@ -130,267 +195,296 @@
 
     .color-chip {
       display: flex;
+      flex-direction: column;
       align-items: center;
       gap: 8px;
-      padding: 8px 14px;
-      border-radius: 20px;
-      border: 2px solid transparent;
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border);
       background: var(--surface2);
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.82rem;
       font-weight: 600;
       user-select: none;
-      transition: border-color .15s, transform .1s;
+      transition: all .18s;
+      min-width: 80px;
+      color: var(--text-muted);
+    }
+    .color-chip:hover {
+      border-color: var(--border-light);
+      transform: translateY(-2px);
+      color: var(--text);
     }
     .color-chip:active { transform: scale(.95); }
-    .color-chip.selected { border-color: var(--gold-light); }
+    .color-chip.selected {
+      border-color: var(--gold-light);
+      background: rgba(245,185,66,.08);
+      color: var(--text);
+      box-shadow: 0 0 16px rgba(245,185,66,.15);
+    }
     .color-chip .dot {
-      width: 18px;
-      height: 18px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      border: 2px solid rgba(255,255,255,.3);
+      box-shadow: 0 2px 8px rgba(0,0,0,.4);
     }
 
     /* ── Player name input row ── */
-    .players-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
-    .player-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .players-list { display: flex; flex-direction: column; gap: 10px; }
+    .player-row { display: flex; align-items: center; gap: 10px; }
     .player-row .dot {
-      width: 22px;
-      height: 22px;
+      width: 24px; height: 24px;
       border-radius: 50%;
       flex-shrink: 0;
-      border: 2px solid rgba(255,255,255,.3);
+      box-shadow: 0 2px 6px rgba(0,0,0,.4);
     }
     .player-row input {
       flex: 1;
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       color: var(--text);
-      padding: 7px 12px;
-      font-size: 0.95rem;
+      padding: 9px 14px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      transition: border-color .15s;
     }
+    .player-row input::placeholder { color: var(--text-dim); }
     .player-row input:focus {
       outline: none;
-      border-color: var(--gold);
+      border-color: var(--gold-dim);
+      background: var(--surface3);
     }
-    .player-row .remove-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.2rem;
-      padding: 4px 8px;
-      line-height: 1;
-    }
-    .player-row .remove-btn:hover { color: var(--red); }
 
-    /* ── Dice tracker ── */
+    /* ── Dice grid ── */
     .dice-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 10px;
     }
 
     .dice-cell {
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 12px 8px;
+      border-radius: var(--radius-sm);
+      padding: 12px 6px;
       text-align: center;
-      transition: border-color .15s;
+      transition: all .15s;
+      cursor: default;
     }
-    .dice-cell:hover { border-color: var(--gold); }
+    .dice-cell:hover {
+      border-color: var(--gold-dim);
+      background: var(--surface3);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
 
     .dice-cell .dice-num {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       font-weight: 800;
       color: var(--gold-light);
       line-height: 1;
     }
-    .dice-cell.red-num .dice-num { color: #e74c3c; }
+    .dice-cell.seven .dice-num { color: #e05c4a; }
 
     .dice-cell .prob-label {
-      font-size: 0.68rem;
-      color: var(--text-muted);
-      margin: 3px 0 8px;
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      margin: 3px 0 10px;
+      letter-spacing: .2px;
     }
     .dice-cell .count-display {
-      font-size: 1.6rem;
-      font-weight: 700;
-      min-height: 2rem;
+      font-size: 1.8rem;
+      font-weight: 800;
       line-height: 1;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      color: var(--text);
     }
+    .dice-cell.seven .count-display { color: #e05c4a; }
+
     .dice-cell .stepper {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      gap: 5px;
     }
-    .dice-cell .stepper button {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      font-size: 1.1rem;
+    .stepper .plus-btn, .stepper .minus-btn {
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      font-size: 1rem;
       padding: 0;
-      line-height: 1;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-weight: 800;
     }
-    .stepper .plus-btn { background: var(--gold); color: #1a0d00; }
+    .stepper .plus-btn {
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: #120800;
+    }
+    .stepper .plus-btn:hover { box-shadow: 0 0 10px rgba(212,146,15,.4); }
     .stepper .minus-btn {
-      background: transparent;
+      background: var(--surface3);
       border: 1px solid var(--border);
       color: var(--text-muted);
-      font-size: 0.9rem;
     }
     .stepper .minus-btn:hover { border-color: var(--red); color: var(--red); }
 
-    /* ── Quick roll row ── */
+    /* ── Quick roll bar ── */
     .quick-roll-bar {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 16px;
     }
     .quick-roll-bar button {
-      min-width: 36px;
-      height: 36px;
-      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
       padding: 0;
-      font-size: 0.9rem;
-      font-weight: 700;
+      font-size: 1rem;
+      font-weight: 800;
       background: var(--surface2);
       border: 1px solid var(--border);
-      color: var(--text);
+      color: var(--text-muted);
+      transition: all .15s;
     }
     .quick-roll-bar button:hover {
-      background: var(--gold);
-      color: #1a0d00;
-      border-color: var(--gold);
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: #120800;
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(212,146,15,.35);
     }
-    .quick-roll-bar .red-num { color: #e74c3c; }
+    .quick-roll-bar .seven { color: #e05c4a; border-color: rgba(224,92,74,.3); }
+    .quick-roll-bar .seven:hover { background: linear-gradient(135deg, #e07060, #c0392b); color: #fff; }
 
-    /* ── Stats bar ── */
+    /* ── Stats row ── */
     .stats-row {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
-      margin-top: 16px;
+      margin-bottom: 20px;
     }
     .stat-chip {
       background: var(--surface2);
-      border-radius: 8px;
-      padding: 8px 14px;
-      font-size: 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      flex: 1;
+      min-width: 140px;
     }
-    .stat-chip span { color: var(--gold); font-weight: 700; }
+    .stat-chip .stat-val {
+      display: block;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--gold-light);
+      margin-top: 2px;
+    }
 
     /* ── Histogram ── */
-    #results-section { display: none; }
-
-    .histogram {
-      padding: 8px 0;
-    }
+    .histogram { padding: 4px 0; }
     .hist-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
+      gap: 12px;
+      margin-bottom: 8px;
     }
     .hist-label {
-      width: 24px;
+      width: 22px;
       text-align: right;
-      font-weight: 700;
-      font-size: 0.95rem;
+      font-weight: 800;
+      font-size: 0.9rem;
       flex-shrink: 0;
+      color: var(--text-muted);
     }
-    .hist-label.red-num { color: #e74c3c; }
+    .hist-label.seven { color: #e05c4a; }
 
-    .hist-bars {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .bar-track {
+    .hist-bar-wrap { flex: 1; position: relative; height: 24px; }
+    .bar-bg {
+      position: absolute;
+      inset: 0;
       background: var(--surface2);
-      border-radius: 4px;
-      height: 18px;
-      position: relative;
-      overflow: visible;
+      border-radius: 6px;
     }
-
     .bar-actual {
-      background: var(--gold);
-      height: 100%;
-      border-radius: 4px;
-      transition: width .6s ease;
       position: absolute;
-      top: 0; left: 0;
+      top: 0; left: 0; height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      border-radius: 6px;
+      transition: width .7s cubic-bezier(.4,0,.2,1);
     }
-    .bar-expected {
-      background: transparent;
-      border-right: 3px solid #4ecdc4;
-      height: calc(100% + 4px);
+    .bar-expected-line {
       position: absolute;
-      top: -2px;
-      border-radius: 0;
+      top: -3px;
+      width: 2px;
+      height: calc(100% + 6px);
+      background: var(--accent);
+      border-radius: 2px;
     }
-    .bar-label-actual { font-size: 0.72rem; color: var(--text-muted); }
-    .bar-label-expected { font-size: 0.72rem; color: #4ecdc4; }
 
     .hist-counts {
-      min-width: 90px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
+      min-width: 110px;
+      font-size: 0.78rem;
       flex-shrink: 0;
     }
     .hist-counts .actual-val { color: var(--text); font-weight: 700; }
+    .hist-counts .exp-val { color: var(--text-muted); }
 
     .legend {
       display: flex;
-      gap: 16px;
-      font-size: 0.8rem;
-      margin-bottom: 14px;
-      align-items: center;
+      gap: 20px;
+      font-size: 0.78rem;
+      margin-bottom: 16px;
+      color: var(--text-muted);
     }
     .legend-item { display: flex; align-items: center; gap: 6px; }
-    .legend-box {
-      width: 16px;
-      height: 12px;
-      border-radius: 3px;
-      background: var(--gold);
-    }
-    .legend-line {
-      width: 16px;
-      border-top: 3px solid #4ecdc4;
-    }
+    .legend-box { width: 14px; height: 10px; border-radius: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+    .legend-line { width: 14px; height: 2px; background: var(--accent); border-radius: 2px; }
 
+    /* ── Analysis cards ── */
     .analysis-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
       gap: 12px;
-      margin-top: 16px;
     }
     .analysis-card {
       background: var(--surface2);
-      border-radius: var(--radius);
-      padding: 14px;
+      border-radius: var(--radius-sm);
+      padding: 16px;
       border: 1px solid var(--border);
+      transition: border-color .2s;
     }
-    .analysis-card .label { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px; }
-    .analysis-card .value { font-size: 1.2rem; font-weight: 700; color: var(--gold-light); }
-    .analysis-card .sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+    .analysis-card:hover { border-color: var(--border-light); }
+    .analysis-card .a-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+    .analysis-card .a-value { font-size: 1.5rem; font-weight: 800; color: var(--gold-light); line-height: 1; }
+    .analysis-card .a-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; line-height: 1.4; }
 
-    /* ── Action buttons ── */
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    /* ── Players pill ── */
+    .players-pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .player-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .player-pill .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+    /* ── Actions ── */
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 18px 0;
+    }
 
     /* ── Section visibility ── */
     .section { display: none; }
@@ -398,8 +492,9 @@
 
     /* ── Responsive ── */
     @media (max-width: 500px) {
-      .dice-grid { grid-template-columns: repeat(3, 1fr); }
+      .dice-grid { grid-template-columns: repeat(4, 1fr); }
       header h1 { font-size: 1.2rem; }
+      .stat-chip { min-width: 100px; }
     }
   </style>
 </head>
@@ -409,28 +504,27 @@
   <div class="logo">🎲</div>
   <div>
     <h1>Catan Tracker</h1>
-    <div class="subtitle">Registra tus tiradas y analiza la estadística</div>
+    <div class="subtitle">Registrá tus tiradas · Analizá la estadística</div>
   </div>
 </header>
 
 <div class="container">
 
-  <!-- Phase indicator -->
   <div class="phase-indicator" id="phaseBar">
-    <div class="phase-step active" id="phase1">1. Jugadores</div>
-    <div class="phase-step" id="phase2">2. Partida</div>
-    <div class="phase-step" id="phase3">3. Resultados</div>
+    <div class="phase-step active" id="phase1">① Jugadores</div>
+    <div class="phase-step" id="phase2">② Partida</div>
+    <div class="phase-step" id="phase3">③ Resultados</div>
   </div>
 
-  <!-- ══ SECTION 1: Player setup ══ -->
+  <!-- ══ SECTION 1 ══ -->
   <div class="section visible" id="setupSection">
     <div class="card">
-      <h2>🎨 Elige los colores que se juegan</h2>
+      <h2><span class="icon">🎨</span> Colores en juego</h2>
       <div class="color-grid" id="colorGrid"></div>
     </div>
 
     <div class="card" id="playerNamesCard" style="display:none">
-      <h2>✏️ Nombre de los jugadores</h2>
+      <h2><span class="icon">✏️</span> Nombre de jugadores</h2>
       <div class="players-list" id="playersList"></div>
     </div>
 
@@ -439,30 +533,26 @@
     </div>
   </div>
 
-  <!-- ══ SECTION 2: Game ══ -->
+  <!-- ══ SECTION 2 ══ -->
   <div class="section" id="gameSection">
     <div class="card">
-      <h2>⚡ Registrar tirada rápida</h2>
-      <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px">
-        Toca el número que salió para sumarlo directamente.
-      </p>
+      <h2><span class="icon">⚡</span> Tirada rápida</h2>
       <div class="quick-roll-bar" id="quickRollBar"></div>
     </div>
 
     <div class="card">
-      <h2>📊 Conteo de tiradas</h2>
+      <h2><span class="icon">📊</span> Conteo de tiradas</h2>
       <div class="stats-row" id="statsRow">
-        <div class="stat-chip">Total tiradas: <span id="totalRolls">0</span></div>
-        <div class="stat-chip">Tirada más frecuente: <span id="mostFreq">—</span></div>
-        <div class="stat-chip">Ronda estimada: <span id="roundEst">—</span></div>
+        <div class="stat-chip">Total tiradas<span class="stat-val" id="totalRolls">0</span></div>
+        <div class="stat-chip">Más frecuente<span class="stat-val" id="mostFreq">—</span></div>
+        <div class="stat-chip">Ronda estimada<span class="stat-val" id="roundEst">—</span></div>
       </div>
-      <br>
       <div class="dice-grid" id="diceGrid"></div>
     </div>
 
     <div class="card" id="playersCard" style="display:none">
-      <h2>👥 Jugadores</h2>
-      <div id="playersPill" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      <h2><span class="icon">👥</span> Jugadores</h2>
+      <div class="players-pill-row" id="playersPill"></div>
     </div>
 
     <div class="actions">
@@ -471,16 +561,16 @@
     </div>
   </div>
 
-  <!-- ══ SECTION 3: Results ══ -->
+  <!-- ══ SECTION 3 ══ -->
   <div class="section" id="resultsSection">
     <div class="card">
-      <h2>🏆 Resultados de la partida</h2>
-      <div id="resultPlayersPill" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"></div>
+      <h2><span class="icon">🏆</span> Resultado final</h2>
+      <div class="players-pill-row" id="resultPlayersPill" style="margin-bottom:16px"></div>
       <div class="stats-row" id="resultsStatsRow"></div>
     </div>
 
     <div class="card">
-      <h2>📈 Histograma de tiradas</h2>
+      <h2><span class="icon">📈</span> Histograma de tiradas</h2>
       <div class="legend">
         <div class="legend-item"><div class="legend-box"></div> Tiradas reales</div>
         <div class="legend-item"><div class="legend-line"></div> Esperado estadístico</div>
@@ -489,7 +579,7 @@
     </div>
 
     <div class="card">
-      <h2>🔍 Análisis</h2>
+      <h2><span class="icon">🔍</span> Análisis</h2>
       <div class="analysis-grid" id="analysisGrid"></div>
     </div>
 
@@ -508,8 +598,6 @@ const CATAN_COLORS = [
   { id: 'blue',   label: 'Azul',     hex: '#2980b9' },
   { id: 'white',  label: 'Blanco',   hex: '#ecf0f1' },
   { id: 'orange', label: 'Naranja',  hex: '#e67e22' },
-  { id: 'green',  label: 'Verde',    hex: '#27ae60' },
-  { id: 'brown',  label: 'Marrón',   hex: '#8B5E3C' },
 ];
 
 // Probability of each sum with 2d6
@@ -533,7 +621,7 @@ function buildColorGrid() {
     const chip = document.createElement('div');
     chip.className = 'color-chip';
     chip.dataset.id = c.id;
-    chip.innerHTML = `<div class="dot" style="background:${c.hex}"></div>${c.label}`;
+    chip.innerHTML = `<div class="dot" style="background:${c.hex}"></div><span>${c.label}</span>`;
     chip.onclick = () => toggleColor(c.id, chip);
     grid.appendChild(chip);
   });
@@ -602,7 +690,7 @@ function buildQuickRollBar() {
   DICE_NUMS.forEach(n => {
     const btn = document.createElement('button');
     btn.textContent = n;
-    if (n === 7) btn.classList.add('red-num');
+    if (n === 7) btn.classList.add('seven');
     btn.onclick = () => { rolls[n]++; updateDiceCell(n); updateStats(); };
     btn.id = `qbtn-${n}`;
     bar.appendChild(btn);
@@ -615,7 +703,7 @@ function buildDiceGrid() {
   DICE_NUMS.forEach(n => {
     const prob = (PROB[n] / TOTAL_COMBOS * 100).toFixed(1);
     const cell = document.createElement('div');
-    cell.className = 'dice-cell' + (n === 7 ? ' red-num' : '');
+    cell.className = 'dice-cell' + (n === 7 ? ' seven' : '');
     cell.id = `cell-${n}`;
     cell.innerHTML = `
       <div class="dice-num">${n}</div>
@@ -651,8 +739,8 @@ function renderPlayersInGame() {
     const color = CATAN_COLORS.find(c => c.id === id);
     const name = playerNames[id] || color.label;
     const el = document.createElement('div');
-    el.style.cssText = `display:flex;align-items:center;gap:6px;background:var(--surface2);padding:6px 12px;border-radius:20px;border:1px solid var(--border)`;
-    el.innerHTML = `<div style="width:14px;height:14px;border-radius:50%;background:${color.hex};border:2px solid rgba(255,255,255,.3)"></div><span style="font-size:.9rem">${name}</span>`;
+    el.className = 'player-pill';
+    el.innerHTML = `<div class="dot" style="background:${color.hex}"></div><span>${name}</span>`;
     pill.appendChild(el);
   });
 }
@@ -692,8 +780,8 @@ function buildResults() {
     const color = CATAN_COLORS.find(c => c.id === id);
     const name = playerNames[id] || color.label;
     const el = document.createElement('div');
-    el.style.cssText = `display:flex;align-items:center;gap:6px;background:var(--surface2);padding:6px 12px;border-radius:20px;border:1px solid var(--border)`;
-    el.innerHTML = `<div style="width:14px;height:14px;border-radius:50%;background:${color.hex};border:2px solid rgba(255,255,255,.3)"></div><span style="font-size:.9rem">${name}</span>`;
+    el.className = 'player-pill';
+    el.innerHTML = `<div class="dot" style="background:${color.hex}"></div><span>${name}</span>`;
     rp.appendChild(el);
   });
 
@@ -728,18 +816,17 @@ function buildResults() {
     const row = document.createElement('div');
     row.className = 'hist-row';
     row.innerHTML = `
-      <div class="hist-label${n === 7 ? ' red-num' : ''}">${n}</div>
-      <div class="hist-bars">
-        <div class="bar-track" style="height:22px">
-          <div class="bar-actual" style="width:${actualPct}%"></div>
-          <div class="bar-expected" style="width:${expectedPct}%"></div>
-        </div>
+      <div class="hist-label${n === 7 ? ' seven' : ''}">${n}</div>
+      <div class="hist-bar-wrap">
+        <div class="bar-bg"></div>
+        <div class="bar-actual" style="width:${actualPct}%"></div>
+        <div class="bar-expected-line" style="left:${expectedPct}%"></div>
       </div>
       <div class="hist-counts">
         <span class="actual-val">${actual}</span>
-        <span style="color:var(--text-muted)"> / esp. ${expected.toFixed(1)}</span>
+        <span class="exp-val"> / esp. ${expected.toFixed(1)}</span>
         <br>
-        <span style="font-size:.72rem;color:var(--text-muted)">${actualRealPct}% real · ${expectedRealPct}% teórico</span>
+        <span style="font-size:.7rem;color:var(--text-dim)">${actualRealPct}% · ${expectedRealPct}%</span>
       </div>
     `;
     hist.appendChild(row);
@@ -794,7 +881,7 @@ function buildAnalysis(total) {
 function addAnalysisCard(grid, label, value, sub) {
   const card = document.createElement('div');
   card.className = 'analysis-card';
-  card.innerHTML = `<div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div>`;
+  card.innerHTML = `<div class="a-label">${label}</div><div class="a-value">${value}</div><div class="a-sub">${sub}</div>`;
   grid.appendChild(card);
 }
 

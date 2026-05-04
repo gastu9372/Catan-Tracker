@@ -491,10 +491,89 @@
     .section.visible { display: block; }
 
     /* ── Responsive ── */
-    @media (max-width: 500px) {
-      .dice-grid { grid-template-columns: repeat(4, 1fr); }
-      header h1 { font-size: 1.2rem; }
-      .stat-chip { min-width: 100px; }
+
+    /* Tablet */
+    @media (max-width: 768px) {
+      .container { padding: 20px 14px; }
+
+      .card { padding: 18px; }
+
+      .analysis-grid { grid-template-columns: repeat(2, 1fr); }
+
+      .hist-counts { min-width: 90px; }
+    }
+
+    /* Mobile */
+    @media (max-width: 480px) {
+      header {
+        padding: 14px 16px;
+        gap: 12px;
+      }
+      header .logo { font-size: 1.7rem; }
+      header h1 { font-size: 1.15rem; }
+      header .subtitle { display: none; }
+
+      .container { padding: 14px 10px; }
+
+      .card { padding: 14px 12px; margin-bottom: 12px; border-radius: 10px; }
+      .card h2 { font-size: 0.82rem; margin-bottom: 14px; }
+
+      .phase-indicator { margin-bottom: 16px; border-radius: 10px; }
+      .phase-step { padding: 10px 4px; font-size: 0.72rem; }
+
+      /* Color chips: 2 per row */
+      .color-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .color-chip { padding: 12px 10px; min-width: unset; }
+      .color-chip .dot { width: 26px; height: 26px; }
+
+      /* Quick roll: fill row evenly */
+      .quick-roll-bar { gap: 5px; }
+      .quick-roll-bar button {
+        flex: 1;
+        min-width: 0;
+        height: 42px;
+        font-size: 0.95rem;
+        border-radius: 8px;
+      }
+
+      /* Stats: 1 per row on tiny screens */
+      .stats-row { gap: 8px; margin-bottom: 14px; }
+      .stat-chip { min-width: unset; flex: 1 1 calc(33% - 6px); padding: 8px 10px; font-size: 0.75rem; }
+      .stat-chip .stat-val { font-size: 1.1rem; }
+
+      /* Dice grid: 4 columns */
+      .dice-grid { grid-template-columns: repeat(4, 1fr); gap: 7px; }
+      .dice-cell { padding: 8px 4px; border-radius: 8px; }
+      .dice-cell .dice-num { font-size: 1.2rem; }
+      .dice-cell .prob-label { font-size: 0.56rem; margin: 2px 0 6px; }
+      .dice-cell .count-display { font-size: 1.35rem; margin-bottom: 6px; }
+      .stepper .plus-btn, .stepper .minus-btn { width: 22px; height: 22px; font-size: 0.85rem; border-radius: 5px; }
+      .dice-cell .stepper { gap: 3px; }
+
+      /* Histogram: hide percentage row on small screens */
+      .hist-counts { min-width: 70px; }
+      .hist-counts br + span { display: none; }
+      .hist-row { gap: 8px; margin-bottom: 7px; }
+      .bar-track, .hist-bar-wrap { height: 20px; }
+
+      /* Analysis: stack to 1 column */
+      .analysis-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .analysis-card { padding: 12px; }
+      .analysis-card .a-value { font-size: 1.2rem; }
+
+      /* Buttons */
+      .btn-primary, .btn-ghost { padding: 11px 18px; font-size: 0.85rem; width: 100%; text-align: center; }
+      .actions { flex-direction: column; }
+
+      /* Players */
+      .player-row input { font-size: 0.88rem; padding: 8px 10px; }
+    }
+
+    /* Very small (< 360px): 3-column dice grid */
+    @media (max-width: 360px) {
+      .dice-grid { grid-template-columns: repeat(3, 1fr); }
+      .quick-roll-bar button { height: 38px; font-size: 0.88rem; }
+      .analysis-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -793,9 +872,9 @@ function buildResults() {
     if (rolls[n] < minCount) { minCount = rolls[n]; minNum = n; }
   });
   statsRow.innerHTML = `
-    <div class="stat-chip">Total tiradas: <span>${total}</span></div>
-    <div class="stat-chip">Número más frecuente: <span>${maxNum} (×${maxCount})</span></div>
-    <div class="stat-chip">Número menos frecuente: <span>${minNum} (×${minCount})</span></div>
+    <div class="stat-chip">Total tiradas<span class="stat-val">${total}</span></div>
+    <div class="stat-chip">Más frecuente<span class="stat-val">${maxNum} ×${maxCount}</span></div>
+    <div class="stat-chip">Menos frecuente<span class="stat-val">${minNum} ×${minCount}</span></div>
   `;
 
   // Histogram
